@@ -127,6 +127,28 @@ func TestDeployCmd(t *testing.T) {
 			IsOutputGolden: false,
 			ExpectedError:  ErrDesignNotFound("nonexistent-design"),
 		},
+		{
+			Name:             "given multi-word design name with spaces when design deploy then search query is correctly encoded",
+			Args:             []string{"deploy", "nonexistent", "design"},
+			ExpectedResponse: "",
+			URLs: []utils.MockURL{
+				{
+					Method:       "GET",
+					URL:          testContext.BaseURL + "/api/pattern/types",
+					Response:     "view.designTypes.response.golden",
+					ResponseCode: 200,
+				},
+				{
+					Method:       "GET",
+					URL:          testContext.BaseURL + "/api/pattern?populate=pattern_file&search=nonexistent+design",
+					Response:     "pattern.empty.response.golden",
+					ResponseCode: 200,
+				},
+			},
+			ExpectError:    true,
+			IsOutputGolden: false,
+			ExpectedError:  ErrDesignNotFound("nonexistent design"),
+		},
 	}
 
 	// Run tests
